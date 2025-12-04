@@ -9,14 +9,15 @@ import unicodedata
 
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
+load_dotenv()
 
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ModuleNotFoundError:
-    load_dotenv = None
-
+_CUISINE_ALIASES = {
+    "fried chicken": ["ga ran", "fried chicken", "chicken"],
+    "chicken": ["ga", "ga ran", "chicken"],
+    "korean": ["han quoc", "korean"],
+    "bbq": ["barbecue", "nuong", "bbq"],
+}
 
 def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Compute haversine distance in km."""
@@ -46,15 +47,6 @@ def _normalize_text(value: str) -> str:
     value = value.lower()
     nfkd = unicodedata.normalize("NFD", value)
     return "".join(ch for ch in nfkd if not unicodedata.combining(ch))
-
-
-_CUISINE_ALIASES = {
-    "fried chicken": ["ga ran", "fried chicken", "chicken"],
-    "chicken": ["ga", "ga ran", "chicken"],
-    "korean": ["han quoc", "korean"],
-    "bbq": ["barbecue", "nuong", "bbq"],
-}
-
 
 def _expand_requested(requested: Iterable[str]) -> List[str]:
     expanded: List[str] = []

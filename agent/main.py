@@ -18,7 +18,7 @@ from agent.nodes.orchestrator import run as run_orchestrator
 
 
 def main():
-    user_message = "mình muốn ăn gà rán, càng gần cầu rồng càng tốt, giá tầm 300.000"
+    user_message = "mình muốn ăn gà rán, càng gần cầu rồng càng tốt, giá tầm 50.000"
     lat, lng = 16.065, 108.229
 
     result = run_orchestrator(user_message=user_message, lat=lat, lng=lng, top_k=3)
