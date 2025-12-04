@@ -1,0 +1,5 @@
+TestCase: tc06_central_specialties
+Parsed:
+{"intent": "find restaurants", "cuisine": ["vietnamese"], "price_range": {"min": null, "max": null}, "distance_limit_km": 3.0, "rating_min": null, "special_requirements": [], "allergies": [], "eating_time": null, "user_location": {"lat": 16.07, "lng": 108.22}, "raw_input": "đặc sản Đà Nẵng/miền Trung, kiểu bánh tráng thịt heo, phạm vi 3km"}
+Retrieved:
+{"restaurants": []}

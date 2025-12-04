@@ -1,0 +1,5 @@
+TestCase: tc10_asian_mix_vincom
+Parsed:
+{"intent": "find restaurants", "cuisine": ["asian"], "price_range": {"min": null, "max": null}, "distance_limit_km": 2.0, "rating_min": null, "special_requirements": [], "allergies": [], "eating_time": null, "user_location": {"lat": 16.0716, "lng": 108.2307}, "raw_input": "tìm quán Á tổng hợp (Món Á), miễn là rating ổn, trong bán kính 2km từ Vincom"}
+Retrieved:
+{"restaurants": []}

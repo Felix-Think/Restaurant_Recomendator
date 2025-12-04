@@ -1,0 +1,5 @@
+TestCase: tc07_vietnamese_thanh_khe
+Parsed:
+{"intent": "find restaurants", "cuisine": ["vietnamese"], "price_range": {"min": null, "max": null}, "distance_limit_km": null, "rating_min": null, "special_requirements": [], "allergies": [], "eating_time": null, "user_location": {"lat": 16.07, "lng": 108.21}, "raw_input": "cần quán Việt Nam, cơm gà hoặc món Việt, khu Thanh Khê"}
+Retrieved:
+{"restaurants": []}

@@ -1,0 +1,5 @@
+TestCase: tc04_italian_pizza_pasta
+Parsed:
+{"intent": "find restaurants", "cuisine": ["italian", "european"], "price_range": {"min": null, "max": null}, "distance_limit_km": 2.0, "rating_min": null, "special_requirements": [], "allergies": [], "eating_time": null, "user_location": {"lat": 16.0645, "lng": 108.224}, "raw_input": "kiếm quán Món Âu hoặc Ý, có pizza/mỳ ý, khoảng 2km"}
+Retrieved:
+{"restaurants": []}
