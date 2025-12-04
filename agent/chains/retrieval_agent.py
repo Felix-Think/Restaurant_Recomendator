@@ -110,12 +110,15 @@ def _best_effort_special(meta: Dict[str, Any], requirements: List[str]) -> bool:
 
 def _build_output_item(meta: Dict[str, Any], distance_km: Optional[float]) -> Dict[str, Any]:
     return {
+        "restaurant_id": meta.get("restaurant_id") or "",
         "name": meta.get("name") or meta.get("branch_name") or "",
         "address": meta.get("address") or "",
         "lat": float(meta["latitude"]) if meta.get("latitude") not in (None, "") else 0.0,
         "lng": float(meta["longitude"]) if meta.get("longitude") not in (None, "") else 0.0,
         "rating": float(meta["avg_rating"]) if meta.get("avg_rating") not in (None, "") else 0.0,
-        "price_range": "",
+        "price_range": meta.get("price_range") or "",
+        "opening_hours": meta.get("opening_hours") or "",
+        "rating_breakdown": meta.get("rating_breakdown") or "",
         "cuisine": _normalize_list_field(meta.get("cuisines")),
         "distance_km": distance_km if distance_km is not None else 0.0,
         "url": meta.get("detail_url") or meta.get("delivery_url") or "",
@@ -126,6 +129,7 @@ def retrieve_restaurants(
     query: Dict[str, Any],
     persist_dir: Path | str = "chroma/foody",
     collection_name: str = "foody_restaurants",
+    top_k: int = 3,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """
     Retrieve restaurants from Chroma that satisfy the parsed query.
@@ -156,6 +160,7 @@ def retrieve_restaurants(
     special_req = query.get("special_requirements") or []
 
     results: List[Dict[str, Any]] = []
+    seen_keys = set()
     for meta in metadatas:
         if not _passes_cuisine_filter(meta, requested_cuisine):
             continue
@@ -178,9 +183,16 @@ def retrieve_restaurants(
             except (TypeError, ValueError):
                 dist = None
 
-        results.append(_build_output_item(meta, dist))
+        candidate = _build_output_item(meta, dist)
+        dedupe_key = candidate["restaurant_id"] or candidate["url"] or f"{candidate['name']}|{candidate['address']}"
+        if dedupe_key in seen_keys:
+            continue
+        seen_keys.add(dedupe_key)
+        results.append(candidate)
 
-    return {"restaurants": results}
+    # Sort by distance if available, then rating desc as secondary
+    results.sort(key=lambda r: (r["distance_km"] if r["distance_km"] else 1e9, -r["rating"]))
+    return {"restaurants": results[:top_k]}
 
 
 def build_retrieval_chain(
@@ -194,7 +206,13 @@ def build_retrieval_chain(
     """
 
     def _invoke(query: Dict[str, Any]) -> Dict[str, Any]:
-        return retrieve_restaurants(query, persist_dir=persist_dir, collection_name=collection_name)
+        top_k = query.pop("top_k", 3)
+        return retrieve_restaurants(
+            query,
+            persist_dir=query.get("persist_dir", persist_dir),
+            collection_name=query.get("collection_name", collection_name),
+            top_k=top_k,
+        )
 
     class _Chain:
         def invoke(self, inp: Dict[str, Any]) -> Dict[str, Any]:

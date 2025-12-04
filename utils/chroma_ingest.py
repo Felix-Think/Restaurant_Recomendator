@@ -27,11 +27,15 @@ def _row_to_document(row: pd.Series) -> Document:
         f"Cuisines: {row.get('cuisines', '')}",
         f"Categories: {row.get('categories', '')}",
         f"Rating: {row.get('avg_rating', '')} ({row.get('total_reviews', '')} reviews)",
-        f"Delivery: {row.get('has_delivery', '')}, Booking: {row.get('has_booking', '')}",
+        f"Delivery URL: {row.get('delivery_url', '')}",
+        f"Detail URL: {row.get('detail_url', '')}",
+        f"Price range: {row.get('price_range', '')}",
+        f"Opening hours: {row.get('opening_hours', '')}",
     ]
     page_content = "\n".join([part for part in text_parts if part])
 
     metadata = {
+        "restaurant_id": row.get("restaurant_id"),
         "name": row.get("name"),
         "branch_name": row.get("branch_name"),
         "address": row.get("address"),
@@ -39,16 +43,15 @@ def _row_to_document(row: pd.Series) -> Document:
         "city": row.get("city"),
         "avg_rating": row.get("avg_rating"),
         "total_reviews": row.get("total_reviews"),
-        "has_delivery": row.get("has_delivery"),
-        "has_booking": row.get("has_booking"),
         "delivery_url": row.get("delivery_url"),
-        "booking_url": row.get("booking_url"),
         "detail_url": row.get("detail_url"),
-        "branch_url": row.get("branch_url"),
         "cuisines": row.get("cuisines"),
         "categories": row.get("categories"),
         "latitude": row.get("latitude"),
         "longitude": row.get("longitude"),
+        "price_range": row.get("price_range"),
+        "opening_hours": row.get("opening_hours"),
+        "rating_breakdown": row.get("rating_breakdown"),
     }
     return Document(page_content=page_content, metadata=metadata)
 
@@ -66,7 +69,9 @@ def ingest_to_chroma(
     collection_name: str = "foody_restaurants",
 ):
     """Load CSV, convert to documents, and persist into a Chroma collection."""
+
     documents = load_documents(csv_path)
+    print(documents[0].metadata['price_range'])
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     vectorstore = Chroma.from_documents(
         documents=documents,

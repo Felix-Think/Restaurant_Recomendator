@@ -3,15 +3,16 @@
 TEST_CASES = [
     {
         "id": "tc01_fried_chicken",
-        "user_input": "mình muốn ăn gà rán, càng gần cầu rồng càng tốt",
+        "user_input": "mình muốn ăn gà rán, càng gần cầu rồng càng tốt, giá tầm 300.000",
         "lat": 16.0650,
         "lng": 108.2290,
     },
     {
         "id": "tc02_korean_bbq",
-        "user_input": "cho mình quán đồ Hàn/BBQ, khoảng 3km quanh trung tâm Hải Châu, rating trên 7",
+        "user_input": "cho mình quán đồ Hàn/BBQ, khoảng 3km quanh trung tâm Hải Châu, rating trên 7, có menu nướng BBQ đa dạng",
         "lat": 16.0670,
         "lng": 108.2200,
+        "want_menu": True,
     },
     {
         "id": "tc03_japanese_near_beach",
@@ -36,6 +37,7 @@ TEST_CASES = [
         "user_input": "đặc sản Đà Nẵng/miền Trung, kiểu bánh tráng thịt heo, phạm vi 3km",
         "lat": 16.0700,
         "lng": 108.2200,
+        "distance_limit_km": 3.0,
     },
     {
         "id": "tc07_vietnamese_thanh_khe",
@@ -60,5 +62,6 @@ TEST_CASES = [
         "user_input": "tìm quán Á tổng hợp (Món Á), miễn là rating ổn, trong bán kính 2km từ Vincom",
         "lat": 16.0716,
         "lng": 108.2307,
+        "distance_limit_km": 2.0,
     },
 ]

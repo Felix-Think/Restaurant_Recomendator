@@ -14,5 +14,6 @@ dependencies = [
     "langchain-openai>=1.1.0",
     "pandas>=2.3.3",
     "playwright>=1.56.0",
+    "pymongo[srv]>=4.15.5",
     "requests>=2.32.5",
 ]

@@ -10,5 +10,3 @@ chroma/
 # Env
 .env
 
-# Test outputs
-agent/test/testcase/tested/*

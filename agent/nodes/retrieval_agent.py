@@ -15,6 +15,7 @@ def run(
     query: Dict[str, Any],
     persist_dir: Path | str = "chroma/foody",
     collection_name: str = "foody_restaurants",
+    top_k: int = 3,
     chain=None,
 ) -> Dict[str, Any]:
     """
@@ -23,7 +24,8 @@ def run(
     """
     if chain is None:
         chain = _DEFAULT_CHAIN
-    return chain.invoke(query)
+    enriched_query = query | {"persist_dir": persist_dir, "collection_name": collection_name, "top_k": top_k}
+    return chain.invoke(enriched_query)
 
 
 __all__ = ["run", "build_retrieval_chain", "run_retrieval"]
