@@ -65,6 +65,9 @@ class CFModel:
         iidx = self.item_index.get(item_id)
         if uidx is None or iidx is None:
             return 0.0
+        # Defensive bounds check in case stored factors are misaligned with indices
+        if uidx >= len(self.user_factors) or iidx >= len(self.item_factors):
+            return 0.0
         uvec = self.user_factors[uidx]
         ivec = self.item_factors[iidx]
         return sum(u * v for u, v in zip(uvec, ivec))

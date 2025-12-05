@@ -6,7 +6,6 @@ from typing import Any, Dict, List
 
 from agent.nodes.input_parser import run as parse_input
 from agent.nodes.retrieval_agent import run as run_retrieval
-from agent.chains.reranker import rerank_restaurants
 from agent.chains.answer_agent import format_answer
 from agent.chains.bandit import bandit_rerank, SimpleLinUCB
 from agent.chains.cf_online import cf_rerank
@@ -22,7 +21,7 @@ def run_flow(
     """Execute full pipeline and return structured output plus formatted answer."""
     parsed = parse_input(user_message, lat=lat, lng=lng)
     # trigger background CF retrain if log grew enough
-    trigger_retrain_if_needed()
+    trigger_retrain_if_needed() # neu du  n samples
     retrieved = run_retrieval(parsed, top_k=top_k)
     restaurants: List[Dict[str, Any]] = retrieved.get("restaurants", [])
     # CF rerank: prefer trained model if available, else fallback to online CF

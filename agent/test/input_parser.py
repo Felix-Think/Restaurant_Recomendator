@@ -14,7 +14,7 @@ from agent.nodes.input_parser import run
 
 def main():
     result = run(
-        "tôi muốn ăn mì quảng hoặc bún bò,  tôi không ăn được hành và không thích chỗ đông người",
+        "tôi muốn ăn mì quảng hoặc bún bò,  tôi không ăn được hành và không thích chỗ đông người, ăn lúc 10h sáng",
         lat=16.0471,
         lng=108.2062,
     )

@@ -48,3 +48,26 @@ u31,214989,2025-12-05T11:14:45.371989+07:00,click,0.1,16.065,108.229,find restau
 u31,147556,2025-12-05T11:14:47.341151+07:00,click,0.1,16.065,108.229,find restaurants,bbq,,100000.0
 u31,655554,2025-12-05T11:14:49.324241+07:00,click,0.1,16.065,108.229,find restaurants,bbq,,100000.0
 u31,1048474,2025-12-05T11:14:51.174846+07:00,click,0.1,16.065,108.229,find restaurants,bbq,,100000.0
+u31,18700,2025-12-05T22:17:29.930318+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,,300000.0
+u31,12074,2025-12-05T22:17:29.930541+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,,300000.0
+u31,124284,2025-12-05T22:17:29.930638+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,,300000.0
+u31,1174345,2025-12-05T22:17:29.930699+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,,300000.0
+u31,1145439,2025-12-05T22:17:29.930748+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,,300000.0
+u31,18700,2025-12-05T22:22:36.910229+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,12074,2025-12-05T22:22:36.910501+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,124284,2025-12-05T22:22:36.910602+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,1174345,2025-12-05T22:22:36.910655+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,1145439,2025-12-05T22:22:36.910698+07:00,impression,0.0,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,18700,2025-12-05T22:25:53.425942+07:00,click,0.1,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,12074,2025-12-05T22:25:59.089331+07:00,like,1.0,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,124284,2025-12-05T22:26:00.441649+07:00,dislike,-0.5,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,1174345,2025-12-05T22:26:01.075695+07:00,like,1.0,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,1145439,2025-12-05T22:26:01.570908+07:00,dislike,-0.5,16.065,108.229,find restaurants,fried chicken,0.0,300000.0
+u31,170016,2025-12-05T22:28:13.562876+07:00,impression,0.0,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
+u31,942515,2025-12-05T22:28:13.563117+07:00,impression,0.0,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
+u31,170016,2025-12-05T22:29:53.774704+07:00,like,1.0,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
+u31,942515,2025-12-05T22:29:54.425651+07:00,like,1.0,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
+u31,170016,2025-12-05T22:29:55.451877+07:00,click,0.1,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
+u31,942515,2025-12-05T22:29:57.004144+07:00,click,0.1,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
+u31,942515,2025-12-05T22:29:58.279283+07:00,dislike,-0.5,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
+u31,170016,2025-12-05T22:29:58.719668+07:00,dislike,-0.5,16.065,108.229,find restaurants,"japanese, sushi, sashimi, buffet",,
