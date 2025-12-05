@@ -47,12 +47,19 @@
                                 <div class="result-meta">{{ r.address }}</div>
                             </div>
                             <div class="result-tags">
+                                {% if r.cf_score is defined %}
+                                <span class="cf-pill">CF {{ "%.2f"|format(r.cf_score) }}</span>
+                                {% endif %}
                                 <span>⭐ {{ r.rating }}</span>
                                 <span>💰 {{ r.price_range }}</span>
                                 <span>🕒 {{ r.opening_hours }}</span>
                                 <span>📍 {{ "%.2f"|format(r.distance_km) }} km</span>
                             </div>
-                            <a class="btn small" href="{{ r.url }}" target="_blank" onclick="logClick(event, '{{ r.restaurant_id or r.url }}', '{{ r.url }}')">Xem</a>
+                            <div class="feedback-group" style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
+                                <a class="btn small" href="{{ r.url }}" target="_blank" onclick="logClick(event, '{{ r.restaurant_id or r.url }}', '{{ r.url }}')">Xem</a>
+                                <button type="button" class="btn small ghost" onclick="logFeedback('{{ r.restaurant_id or r.url }}','like',1)">👍 Thích</button>
+                                <button type="button" class="btn small ghost" onclick="logFeedback('{{ r.restaurant_id or r.url }}','dislike',-0.5)">👎 Không thích</button>
+                            </div>
                         </li>
                     {% endfor %}
                     </ul>
@@ -109,6 +116,24 @@
                 })
             }).catch(() => {});
             window.open(url, "_blank");
+        }
+
+        function logFeedback(restaurantId, action, reward) {
+            fetch("/track", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({
+                    restaurant_id: restaurantId,
+                    action: action,
+                    reward: reward,
+                    lat: userContext.lat || "",
+                    lng: userContext.lng || "",
+                    intent: userContext.intent || "",
+                    cuisine: userContext.cuisine || "",
+                    price_min: userContext.price_min || "",
+                    price_max: userContext.price_max || "",
+                })
+            }).catch(() => {});
         }
     </script>
 </body>

@@ -15,6 +15,7 @@ def _feature_vector(candidate: Dict, query: Dict) -> List[float]:
     """Build a simple feature vector from candidate metadata and user query."""
     dist = candidate.get("distance_km") or 0.0
     rating = candidate.get("rating") or 0.0
+    cf = candidate.get("cf_score") or 0.0
     price_range = candidate.get("price_range") or ""
     price_min, price_max = 0.0, 0.0
     if "-" in price_range:
@@ -36,14 +37,14 @@ def _feature_vector(candidate: Dict, query: Dict) -> List[float]:
         else:
             price_fit = 1.0
 
-    # Features: [1 (bias), rating, -distance, price_fit]
-    return [1.0, rating, -dist, price_fit]
+    # Features: [1 (bias), rating, -distance, price_fit, cf_score]
+    return [1.0, rating, -dist, price_fit, cf]
 
 
 class SimpleLinUCB:
     """Very small LinUCB-style scorer (shared theta, diagonal covariance)."""
 
-    def __init__(self, alpha: float = 1.0, dim: int = 4):
+    def __init__(self, alpha: float = 1.0, dim: int = 5):
         self.alpha = alpha
         self.dim = dim
         self.A_diag = [1.0] * dim  # diagonal of A matrix

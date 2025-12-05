@@ -36,7 +36,7 @@ def _price_fits(user_range: Dict[str, Any], item_range: str) -> bool:
 def rerank_restaurants(
     restaurants: List[Dict[str, Any]],
     query: Dict[str, Any],
-    top_k: int = 3,
+    top_k: int = 5,
 ) -> List[Dict[str, Any]]:
     """Score and rerank results by distance, rating, and price fit."""
     user_price = query.get("price_range") or {}

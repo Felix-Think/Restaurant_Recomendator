@@ -136,7 +136,7 @@ def chat_submit(
     except ValueError:
         lat_val, lng_val = None, None
 
-    result = run_flow(message, lat=lat_val, lng=lng_val, top_k=3)
+    result = run_flow(message, lat=lat_val, lng=lng_val, top_k=5, user_id=user_id)
     restaurants = result.get("restaurants", [])
 
     # Log impressions

@@ -65,6 +65,13 @@ a { color: #ff6f61; text-decoration: none; }
 .result-name { font-weight: 700; color: #ffb86c; }
 .result-meta { font-size: 13px; color: #c5c9d3; }
 .result-tags { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: #d7dae4; }
+.cf-pill {
+    background: rgba(255, 184, 108, 0.18);
+    color: #ffb86c;
+    padding: 2px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 184, 108, 0.35);
+}
 .chat-input {
     margin-top: 14px;
     display: flex;
@@ -152,5 +159,7 @@ a { color: #ff6f61; text-decoration: none; }
 .form-group input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
 .btn { padding: 10px 16px; border: none; border-radius: 8px; background: #ff6f61; color: white; cursor: pointer; }
 .btn.secondary { background: #555; }
+.btn.small { padding: 6px 10px; font-size: 13px; }
+.btn.ghost { background: transparent; border: 1px solid #ff6f61; color: #ff6f61; }
 .error { color: red; margin-bottom: 10px; }
 .chat-results pre { background: #f0f0f0; padding: 10px; border-radius: 8px; }

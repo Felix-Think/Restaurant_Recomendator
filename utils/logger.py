@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import csv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -46,7 +46,8 @@ def log_interaction(
     Append an interaction row to CSV.
     Fields: user_id, restaurant_id, timestamp, action, reward, lat, lng, intent, cuisine, price_min, price_max.
     """
-    ts = datetime.now(timezone.utc).isoformat()
+    # Ghi thời gian theo múi giờ VN (UTC+7) để dễ đọc log địa phương
+    ts = datetime.now(timezone(timedelta(hours=7))).isoformat()
     lat = _to_float(context.get("lat"))
     lng = _to_float(context.get("lng"))
     intent = (context.get("intent") or "").strip() or None
