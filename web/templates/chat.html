@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Chat</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="chat-body">
+    <div class="chat-shell">
+        <div class="chat-header">
+            <div>
+                <div class="chat-app">FoodHub Chat</div>
+                <div class="chat-user">Xin chào {{ user }}</div>
+            </div>
+            <div class="chat-actions">
+                <a class="btn secondary" href="/">Home</a>
+                <a class="btn" href="/login">Đăng nhập</a>
+            </div>
+        </div>
+
+        <div class="chat-window">
+            {% if message %}
+            <div class="bubble user">
+                <div class="bubble-role">Bạn</div>
+                <div class="bubble-text">{{ message }}</div>
+            </div>
+            {% endif %}
+
+            {% if answer %}
+            <div class="bubble bot">
+                <div class="bubble-role">FoodHub</div>
+                <div class="bubble-text">
+                    <pre>{{ answer }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if results %}
+            <div class="bubble bot results">
+                <div class="bubble-role">FoodHub</div>
+                <div class="bubble-text">
+                    <ul class="result-list">
+                    {% for r in results %}
+                        <li class="result-item">
+                            <div class="result-main">
+                                <div class="result-name">{{ r.name }}</div>
+                                <div class="result-meta">{{ r.address }}</div>
+                            </div>
+                            <div class="result-tags">
+                                <span>⭐ {{ r.rating }}</span>
+                                <span>💰 {{ r.price_range }}</span>
+                                <span>🕒 {{ r.opening_hours }}</span>
+                                <span>📍 {{ "%.2f"|format(r.distance_km) }} km</span>
+                            </div>
+                            <a class="btn small" href="{{ r.url }}" target="_blank" onclick="logClick(event, '{{ r.restaurant_id or r.url }}', '{{ r.url }}')">Xem</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <form id="chat-form" class="chat-input" method="post" action="/chat">
+            <input type="text" name="message" value="{{ message }}" placeholder="Nhập câu hỏi về món/quán, ví dụ: 'BBQ 3km quanh Hải Châu, rating >7'" required>
+            <input type="hidden" name="lat" id="lat" value="{{ user_lat or '' }}">
+            <input type="hidden" name="lng" id="lng" value="{{ user_lng or '' }}">
+            <button type="submit" class="btn">Gửi</button>
+        </form>
+    </div>
+
+    <script>
+        // Bối cảnh người dùng cho logging
+        const userContext = {
+            lat: "{{ user_lat if user_lat is not none else '' }}",
+            lng: "{{ user_lng if user_lng is not none else '' }}",
+            intent: "{{ parsed.get('intent','') if parsed else '' }}",
+            cuisine: "{{ ','.join(parsed.get('cuisine', [])) if parsed else '' }}",
+            price_min: "{{ parsed.get('price_range', {}).get('min', '') if parsed else '' }}",
+            price_max: "{{ parsed.get('price_range', {}).get('max', '') if parsed else '' }}",
+        };
+        // Điền tọa độ bằng Geolocation nếu người dùng cho phép
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                document.getElementById('lat').value = pos.coords.latitude;
+                document.getElementById('lng').value = pos.coords.longitude;
+                userContext.lat = pos.coords.latitude;
+                userContext.lng = pos.coords.longitude;
+            }, function(err) {
+                console.warn('Geolocation failed or denied', err);
+            }, { enableHighAccuracy: true, timeout: 5000 });
+        }
+
+        function logClick(ev, restaurantId, url) {
+            ev.preventDefault();
+            fetch("/track", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({
+                    restaurant_id: restaurantId,
+                    action: "click",
+                    reward: 0,
+                    lat: userContext.lat || "",
+                    lng: userContext.lng || "",
+                    intent: userContext.intent || "",
+                    cuisine: userContext.cuisine || "",
+                    price_min: userContext.price_min || "",
+                    price_max: userContext.price_max || "",
+                })
+            }).catch(() => {});
+            window.open(url, "_blank");
+        }
+    </script>
+</body>
+</html>

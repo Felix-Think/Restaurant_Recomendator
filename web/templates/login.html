@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h1>FoodHub</h1>
+            <p>Gia nhập cộng đồng ẩm thực</p>
+            <ul>
+                <li>Đề xuất nhà hàng theo sở thích</li>
+                <li>Tôn trọng chế độ ăn uống</li>
+                <li>Tìm nhà hàng theo mức giá</li>
+                <li>Lọc theo đánh giá</li>
+            </ul>
+        </div>
+        <div class="right">
+            <div class="card">
+                <h2>Đăng nhập</h2>
+                {% if error %}
+                <div class="error">{{ error }}</div>
+                {% endif %}
+                <form method="post" action="/login">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+                    <button class="btn" type="submit">Login</button>
+                </form>
+                <p>Chưa có tài khoản? <a href="/register">Đăng ký</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

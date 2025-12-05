@@ -1,0 +1,5 @@
+user_id,restaurant_id,timestamp,action,reward,lat,lng,intent,cuisine,price_min,price_max
+u31,655554,2025-12-05T03:15:04.784224+00:00,impression,0.0,16.065,108.229,find restaurants,bbq,,
+u31,147556,2025-12-05T03:15:04.784432+00:00,impression,0.0,16.065,108.229,find restaurants,bbq,,
+u31,214989,2025-12-05T03:15:04.784493+00:00,impression,0.0,16.065,108.229,find restaurants,bbq,,
+u31,655554,2025-12-05T03:17:22.214674+00:00,click,0.1,16.065,108.229,find restaurants,bbq,,

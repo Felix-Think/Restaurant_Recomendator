@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>FoodHub - Home</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script>
+        function goLogin() { window.location.href = "/login"; }
+        function goRegister() { window.location.href = "/register"; }
+        function goChat() { window.location.href = "/chat"; }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h1>FoodHub</h1>
+            <p>Gia nhập cộng đồng ẩm thực</p>
+            <ul>
+                <li>Đề xuất nhà hàng theo sở thích</li>
+                <li>Tôn trọng chế độ ăn uống</li>
+                <li>Tìm nhà hàng theo mức giá</li>
+                <li>Lọc theo đánh giá</li>
+            </ul>
+        </div>
+        <div class="right">
+            <div class="card">
+                <h2>Chào mừng bạn đến với FoodHub</h2>
+                <p>
+                    Trợ lý gợi ý quán ăn theo vị trí, khẩu vị và ngân sách. Đăng nhập hoặc tạo tài khoản để thử chat bot,
+                    các tương tác sẽ được lưu cho tính năng cá nhân hóa (CF + bandit) sau này.
+                </p>
+                <div class="actions" style="margin-top:16px;">
+                    <a onclick="goLogin()">Đăng nhập</a>
+                    <a class="secondary" onclick="goRegister()">Đăng ký</a>
+                    <a class="secondary" onclick="goChat()">Vào Chat</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
