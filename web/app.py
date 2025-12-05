@@ -12,42 +12,29 @@ from fastapi.templating import Jinja2Templates
 
 from agent.chains.orchestrator import run_flow
 from utils.logger import log_interaction
+from utils.db import get_db
 
 ROOT = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(ROOT / "templates"))
-
-USERS_CSV = Path("data/users.csv")
 
 
 def load_users() -> Dict[str, Tuple[str, str]]:
     """Return mapping username -> (user_id, password)."""
     users: Dict[str, Tuple[str, str]] = {}
-    if USERS_CSV.exists():
-        with USERS_CSV.open(encoding="utf-8") as f:
-            import csv
-
-            reader = csv.DictReader(f)
-            for row in reader:
-                users[row["username"]] = (row["user_id"], row["password"])
+    db = get_db()
+    for doc in db.users.find({}, {"username": 1, "password": 1, "user_id": 1}):
+        users[doc["username"]] = (doc["user_id"], doc["password"])
     return users
 
 
 def create_user(username: str, password: str) -> Tuple[str, str]:
-    """Create a new user in CSV, returns (user_id, username)."""
+    """Create a new user in Mongo, returns (user_id, username)."""
     users = load_users()
     if username in users:
         raise ValueError("Username already exists")
     next_id = f"u{len(users) + 1}"
-    USERS_CSV.parent.mkdir(parents=True, exist_ok=True)
-    write_header = not USERS_CSV.exists()
-    with USERS_CSV.open("a", encoding="utf-8", newline="") as f:
-        import csv
-
-        fieldnames = ["user_id", "username", "password"]
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        if write_header:
-            writer.writeheader()
-        writer.writerow({"user_id": next_id, "username": username, "password": password})
+    db = get_db()
+    db.users.insert_one({"user_id": next_id, "username": username, "password": password})
     return next_id, username
 
 

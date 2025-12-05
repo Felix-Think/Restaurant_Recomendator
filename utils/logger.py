@@ -1,13 +1,11 @@
-"""Simple CSV logger for interactions."""
+"""Mongo-backed logger for interactions."""
 
 from __future__ import annotations
 
-import csv
 from datetime import datetime, timezone, timedelta
-from pathlib import Path
 from typing import Any, Dict, Optional
 
-DEFAULT_LOG = Path("data/interactions_log.csv")
+from utils.db import get_db
 
 DEFAULT_ACTION_REWARD = {
     "impression": 0.0,
@@ -34,16 +32,16 @@ def _to_float(val: Any) -> Optional[float]:
     except ValueError:
         return None
 
+
 def log_interaction(
     user_id: str,
     restaurant_id: str,
     action: str,
     context: Dict[str, Any],
     reward: float = 0.0,
-    log_path: Path | str = DEFAULT_LOG,
 ):
     """
-    Append an interaction row to CSV.
+    Persist an interaction event to Mongo.
     Fields: user_id, restaurant_id, timestamp, action, reward, lat, lng, intent, cuisine, price_min, price_max.
     """
     # Ghi thời gian theo múi giờ VN (UTC+7) để dễ đọc log địa phương
@@ -77,15 +75,8 @@ def log_interaction(
         "price_max": price_max,
     }
 
-    log_path = Path(log_path)
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    write_header = not log_path.exists()
-
-    with log_path.open("a", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=row.keys())
-        if write_header:
-            writer.writeheader()
-        writer.writerow(row)
+    db = get_db()
+    db.interactions.insert_one(row)
 
 
-__all__ = ["log_interaction", "DEFAULT_LOG"]
+__all__ = ["log_interaction"]

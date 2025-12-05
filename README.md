@@ -15,11 +15,14 @@ Set up and install deps
    - macOS/Linux: `source .venv/bin/activate`
    - Windows: `.venv\Scripts\activate`
 3) Install: `uv sync`
-4) Export secrets (example): `export OPENAI_API_KEY=...`
+4) Export secrets (example):
+   - `export OPENAI_API_KEY=...`
+   - `export MONGODB_URI=mongodb+srv://...` (defaults to `mongodb://localhost:27017`)
+   - `export MONGODB_DB=restaurant_recommendation`
 
 Run the app with uv
 -------------------
- Create chroma db: ingest embeddings before running search: `uv run python utils/chroma_ingest.py`
+- Create Chroma DB (optional, for semantic retrieval): `uv run python utils/chroma_ingest.py`
 - API/UI server: `uv run uvicorn web.app:app --reload --host 0.0.0.0 --port 8000`
 
 Notes

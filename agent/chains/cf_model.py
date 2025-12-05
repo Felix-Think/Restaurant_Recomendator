@@ -1,19 +1,17 @@
 """CF scorer that loads pre-trained matrix factorization from data/cf_model.pkl.
 
-Also provides a lightweight trigger to retrain ALS in background when log grows.
+Also provides a lightweight trigger to retrain ALS in background when Mongo logs grow.
 """
 
 from __future__ import annotations
 
+import json
 import pickle
 import threading
-import csv
-import json
 from pathlib import Path
 from typing import Dict, Iterable, List, Tuple
 
 MODEL_PATH = Path("data/cf_model.pkl")
-LOG_PATH = Path("data/interactions_log.csv")
 META_PATH = Path("data/cf_model_meta.json")
 
 _TRAINING = False
@@ -56,6 +54,11 @@ class CFModel:
 
     def available(self) -> bool:
         return self._loaded
+
+    def has_user(self, user_id: str) -> bool:
+        """Check if user_id exists in trained model."""
+        self._ensure_fresh()
+        return user_id in self.user_index
 
     def score(self, user_id: str, item_id: str) -> float:
         self._ensure_fresh()
@@ -103,32 +106,22 @@ def _save_meta(count: int, meta_path: Path = META_PATH):
         json.dump({"trained_pos_count": count}, f)
 
 
-def _count_positive(log_path: Path = LOG_PATH) -> int:
-    if not log_path.exists():
+def _count_positive() -> int:
+    """Count positive interactions from Mongo."""
+    try:
+        from utils.db import get_db
+
+        db = get_db()
+        return db.interactions.count_documents({"reward": {"$gt": 0}})
+    except Exception:
         return 0
-    count = 0
-    with log_path.open(encoding="utf-8") as f:
-        reader = csv.reader(f)
-        rows = list(reader)
-        if not rows:
-            return 0
-        # Check header presence
-        start_idx = 1 if rows[0] and rows[0][0] == "user_id" else 0
-        for row in rows[start_idx:]:
-            try:
-                reward = float(row[4]) if len(row) > 4 else 0.0
-            except Exception:
-                reward = 0.0
-            if reward > 0:
-                count += 1
-    return count
 
 
-def _train_background(log_path: Path, model_path: Path, meta_path: Path, pos_count: int):
+def _train_background(model_path: Path, meta_path: Path, pos_count: int):
     global _TRAINING
     try:
         from utils.train_cf import train
-        train(log_path, model_path)
+        train(out_path=model_path)
         _save_meta(pos_count, meta_path)
         print(f"[CF] Retrain done: positives={pos_count}, model={model_path}")
     except Exception:
@@ -142,8 +135,11 @@ def _train_background(log_path: Path, model_path: Path, meta_path: Path, pos_cou
 def trigger_retrain_if_needed(threshold: int = 10):
     """If new positive interactions exceed threshold, retrain ALS in background."""
     global _TRAINING
-    pos = _count_positive(LOG_PATH)
+    pos = _count_positive()
     last = _load_meta(META_PATH)
+    # If meta count is stale (larger than actual positives), force retrain on next threshold
+    if pos < last:
+        last = 0
     if pos - last < threshold:
         return
     with _TRAIN_LOCK:
@@ -151,7 +147,7 @@ def trigger_retrain_if_needed(threshold: int = 10):
             return
         _TRAINING = True
     print(f"[CF] Trigger retrain in background: positives {pos} (last {last})")
-    t = threading.Thread(target=_train_background, args=(LOG_PATH, MODEL_PATH, META_PATH, pos), daemon=True)
+    t = threading.Thread(target=_train_background, args=(MODEL_PATH, META_PATH, pos), daemon=True)
     t.start()
 
 

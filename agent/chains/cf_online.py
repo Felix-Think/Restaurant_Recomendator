@@ -8,41 +8,40 @@ Scoring: Jaccard similarity between target user and other users' item sets,
 
 from __future__ import annotations
 
-import csv
 from collections import defaultdict
-from pathlib import Path
 from typing import Dict, Iterable, List, Set, Tuple
 
-LOG_PATH = Path("data/interactions_log.csv")
+from utils.db import get_db
 
 
 class OnlineCF:
-    def __init__(self, log_path: Path | str = LOG_PATH):
-        self.log_path = Path(log_path)
+    def __init__(self):
         self.user_items: Dict[str, Set[str]] = defaultdict(set)
         self.item_popularity: Dict[str, float] = defaultdict(float)
         self.user_item_reward: Dict[str, Dict[str, float]] = defaultdict(dict)
         self._load()
 
     def _load(self):
-        if not self.log_path.exists():
-            return
-        with self.log_path.open(encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                user = str(row.get("user_id", "")).strip()
-                item = str(row.get("restaurant_id", "")).strip()
-                if not user or not item:
-                    continue
-                try:
-                    reward = float(row.get("reward", 0) or 0)
-                except Exception:
-                    reward = 0.0
-                if reward <= 0:
-                    continue
-                self.user_items[user].add(item)
-                self.item_popularity[item] += reward
-                self.user_item_reward[user][item] = reward
+        try:
+            db = get_db()
+            cursor = db.interactions.find({"reward": {"$gt": 0}}, {"user_id": 1, "restaurant_id": 1, "reward": 1})
+        except Exception:
+            cursor = []
+
+        for row in cursor:
+            user = str(row.get("user_id", "")).strip()
+            item = str(row.get("restaurant_id", "")).strip()
+            if not user or not item:
+                continue
+            try:
+                reward = float(row.get("reward", 0) or 0)
+            except Exception:
+                reward = 0.0
+            if reward <= 0:
+                continue
+            self.user_items[user].add(item)
+            self.item_popularity[item] += reward
+            self.user_item_reward[user][item] = reward
 
     @staticmethod
     def _jaccard(a: Set[str], b: Set[str]) -> float:
@@ -79,9 +78,8 @@ class OnlineCF:
         for cid, score in sorted(scores.items(), key=lambda t: t[1], reverse=True):
             ranked.append((id_to_candidate[cid], score))
         # If some candidates missing in scores (no signal), append them with score 0
-        seen = set(s for _, s in ranked)
         for cid, cand in id_to_candidate.items():
-            if cand not in seen and cid not in scores:
+            if cid not in scores:
                 ranked.append((cand, 0.0))
         return ranked[:top_k]
 

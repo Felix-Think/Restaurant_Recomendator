@@ -26,7 +26,7 @@ def run_flow(
     restaurants: List[Dict[str, Any]] = retrieved.get("restaurants", [])
     # CF rerank: prefer trained model if available, else fallback to online CF
     if user_id:
-        if cf_model.available():
+        if cf_model.available() and cf_model.has_user(user_id):
             restaurants = cf_model.rerank(user_id, restaurants, top_k=top_k)
         else:
             restaurants = cf_rerank(restaurants, user_id=user_id, top_k=top_k)

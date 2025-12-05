@@ -1,10 +1,10 @@
-"""Train a matrix-factorization CF model (ALS) using implicit feedback.
+"""Train a matrix-factorization CF model (ALS) using implicit feedback from MongoDB.
 
 Requirements:
 - implicit (pip install implicit)
 - scipy, numpy, pandas
 
-Input: data/interactions_log.csv (reward > 0)
+Input: Mongo collection `interactions` (reward > 0)
 Output: data/cf_model.pkl with factors + user/item index mapping
 """
 
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import pickle
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -19,39 +20,57 @@ import pandas as pd
 from implicit.als import AlternatingLeastSquares
 from scipy import sparse
 
-DEFAULT_LOG = Path("data/interactions_log.csv")
 DEFAULT_OUT = Path("data/cf_model.pkl")
 
 
+def _load_interactions_df() -> pd.DataFrame:
+    """Load interactions from Mongo only."""
+    try:
+        try:
+            from utils.db import get_db
+        except ImportError:
+            # Allow running as script: add project root to sys.path
+            ROOT = Path(__file__).resolve().parent.parent
+            if str(ROOT) not in sys.path:
+                sys.path.append(str(ROOT))
+            from utils.db import get_db
+
+        db = get_db()
+        docs = list(
+            db.interactions.find(
+                {},
+                {
+                    "user_id": 1,
+                    "restaurant_id": 1,
+                    "timestamp": 1,
+                    "action": 1,
+                    "reward": 1,
+                    "lat": 1,
+                    "lng": 1,
+                    "intent": 1,
+                    "cuisine": 1,
+                    "price_min": 1,
+                    "price_max": 1,
+                },
+            )
+        )
+        if docs:
+            for d in docs:
+                d.pop("_id", None)
+            return pd.DataFrame(docs)
+    except Exception as e:
+        raise RuntimeError(f"Failed to load interactions from Mongo: {e}") from e
+
+    raise ValueError("No interactions found in Mongo to train CF model.")
+
+
 def train(
-    log_path: Path = DEFAULT_LOG,
     out_path: Path = DEFAULT_OUT,
     factors: int = 64,
     reg: float = 0.08,
     iterations: int = 20,
 ):
-    if not log_path.exists():
-        raise FileNotFoundError(f"Log file not found: {log_path}")
-
-    df = pd.read_csv(log_path)
-    if "reward" not in df.columns:
-        df = pd.read_csv(
-            log_path,
-            header=None,
-            names=[
-                "user_id",
-                "restaurant_id",
-                "timestamp",
-                "action",
-                "reward",
-                "lat",
-                "lng",
-                "intent",
-                "cuisine",
-                "price_min",
-                "price_max",
-            ],
-        )
+    df = _load_interactions_df()
 
     # Aggregate per user-item
     agg = {}
@@ -76,6 +95,7 @@ def train(
         agg[key] = cur
 
     aggregated = [(u, it, r) for (u, it), r in agg.items() if r > 0]
+    print(f"Training with {len(aggregated)} positive user-item pairs from {len(df)} raw logs")
     if not aggregated:
         raise ValueError("No positive aggregated rewards to train CF model.")
 
@@ -112,10 +132,14 @@ def train(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train CF ALS model from interaction logs.")
-    parser.add_argument("--log", default=str(DEFAULT_LOG), help="Path to interactions_log.csv")
     parser.add_argument("--out", default=str(DEFAULT_OUT), help="Output model path")
     parser.add_argument("--factors", type=int, default=64)
     parser.add_argument("--reg", type=float, default=0.08)
     parser.add_argument("--iters", type=int, default=20)
     args = parser.parse_args()
-    train(Path(args.log), Path(args.out), factors=args.factors, reg=args.reg, iterations=args.iters)
+    train(
+        Path(args.out),
+        factors=args.factors,
+        reg=args.reg,
+        iterations=args.iters,
+    )
